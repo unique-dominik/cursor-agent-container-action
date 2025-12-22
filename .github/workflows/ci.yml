@@ -46,10 +46,16 @@ jobs:
           push: true
           tags: ${{ env.TEST_TAG }}
 
+      - name: Create test prompt file
+        run: |
+          mkdir -p /tmp/workspace
+          echo "Hello, World!" > /tmp/workspace/test-prompt.md
+
       - name: Test Container Build
         id: run
         run: |
           docker run --rm \
-            --env INPUT_PROMPT="Hello, World!" \
+            -v /tmp/workspace:/github/workspace \
+            --env INPUT_PROMPT_FILE="test-prompt.md" \
             --env INPUT_CURSOR_AGENT_VERSION="2025.12.17-996666f" \
             ${{ env.TEST_TAG }} || echo "Expected to fail without API key"

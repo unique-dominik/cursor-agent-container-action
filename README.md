@@ -11,7 +11,8 @@ tasks.
 
 ## Usage
 
-### Basic usage with inline prompt
+Create a prompt file in your repository (e.g., `.cursor/my-prompt.md`) and
+reference it in your workflow:
 
 ```yaml
 steps:
@@ -21,13 +22,13 @@ steps:
   - name: Run Cursor Agent
     uses: unique-dominik/cursor-agent-container-action@v1
     with:
-      prompt: 'Fix the linting errors in src/'
       cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
+      prompt-file: .cursor/my-prompt.md
 ```
 
-### Advanced usage with template file
+### With environment variable substitution
 
-Use a prompt template file with environment variable substitution:
+Use `envsubst` to inject dynamic values into your prompt template:
 
 ```yaml
 steps:
@@ -54,31 +55,33 @@ steps:
 
 ## Inputs
 
-| Input                  | Description                        | Required | Default              |
-| ---------------------- | ---------------------------------- | -------- | -------------------- |
-| `prompt`               | Prompt to send (use this OR file)  | No\*     | -                    |
-| `prompt-file`          | Path to prompt template (envsubst) | No\*     | -                    |
-| `envsubst-vars`        | Env vars to substitute             | No       | -                    |
-| `cursor-api-key`       | API key for auth (use secrets!)    | Yes      | -                    |
-| `cursor-agent-version` | Cursor Agent version               | No       | `2025.12.17-996666f` |
-| `model`                | Model (e.g., `sonnet-4.5`)         | No       | -                    |
-| `force`                | Run with `--force` flag            | No       | `false`              |
-| `output-format`        | Output format (`text`, `json`)     | No       | -                    |
-| `print`                | Print output (`--print` flag)      | No       | `false`              |
-
-\* Either `prompt` or `prompt-file` must be provided.
+| Input                  | Description                     | Required | Default              |
+| ---------------------- | ------------------------------- | -------- | -------------------- |
+| `prompt-file`          | Path to prompt template file    | Yes      | -                    |
+| `envsubst-vars`        | Env vars to substitute          | No       | -                    |
+| `cursor-api-key`       | API key for auth (use secrets!) | Yes      | -                    |
+| `cursor-agent-version` | Cursor Agent version            | No       | `2025.12.17-996666f` |
+| `model`                | Model (e.g., `sonnet-4.5`)      | No       | -                    |
+| `force`                | Run with `--force` flag         | No       | `false`              |
+| `output-format`        | Output format (`text`, `json`)  | No       | -                    |
+| `print`                | Print output (`--print` flag)   | No       | `false`              |
 
 ## Setup
 
 1. Get your Cursor API key from [cursor.com](https://cursor.com)
 1. Add it as a repository secret named `CURSOR_API_KEY`
+1. Create a prompt file in your repository
 1. Use the action in your workflow
 
 ## Security
 
-This action downloads Cursor Agent directly from Cursor's CDN (no
-`curl | bash`). The version can be pinned via the `cursor-agent-version` input
-for reproducibility.
+This action only accepts **file-based prompts** (no inline prompt input). This
+design choice prevents prompt injection attacks via workflow inputs and ensures
+all prompts are committed to the repository for auditability.
+
+The action downloads Cursor Agent directly from Cursor's CDN (no `curl | bash`).
+The version can be pinned via the `cursor-agent-version` input for
+reproducibility.
 
 Default version: `2025.12.17-996666f`
 
@@ -96,9 +99,11 @@ docker build -t cursor-agent-container-action .
 ### Test the container
 
 ```bash
-docker run \
+echo "Hello, World!" > /tmp/test-prompt.md
+docker run --rm \
+  -v /tmp/test-prompt.md:/github/workspace/prompt.md \
   --env CURSOR_API_KEY="your-key" \
-  --env INPUT_PROMPT="Hello" \
+  --env INPUT_PROMPT_FILE="prompt.md" \
   --env INPUT_CURSOR_AGENT_VERSION="2025.12.17-996666f" \
   cursor-agent-container-action
 ```

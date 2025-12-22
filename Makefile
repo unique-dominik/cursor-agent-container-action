@@ -2,8 +2,8 @@
 
 .DEFAULT_GOAL := all
 
-# Fix, lint, and clean up
-all: fix lint clean
+# Fix and lint
+all: fix lint
 	@echo "=== All done! ==="
 
 # Run all linters (check mode)
@@ -18,8 +18,11 @@ build:
 
 # Test the container
 test: build
+	@mkdir -p /tmp/cursor-test
+	@echo "Hello, World!" > /tmp/cursor-test/prompt.md
 	docker run --rm \
-		--env INPUT_PROMPT="Hello, World!" \
+		-v /tmp/cursor-test:/github/workspace \
+		--env INPUT_PROMPT_FILE="prompt.md" \
 		--env INPUT_CURSOR_AGENT_VERSION="2025.12.17-996666f" \
 		cursor-agent-container-action || echo "Expected to fail without API key"
 

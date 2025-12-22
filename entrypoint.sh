@@ -68,29 +68,28 @@ echo "::endgroup::"
 # GitHub Actions workspace (mounted at /github/workspace in containers)
 WORKSPACE="${GITHUB_WORKSPACE:-/github/workspace}"
 
-# Resolve the prompt (either direct or from file with envsubst)
-PROMPT=""
-if [ -n "$INPUT_PROMPT" ]; then
-	PROMPT="$INPUT_PROMPT"
-elif [ -n "$INPUT_PROMPT_FILE" ]; then
-	# Resolve prompt file path relative to workspace
-	PROMPT_FILE_PATH="$INPUT_PROMPT_FILE"
-	if [[ ! "$PROMPT_FILE_PATH" = /* ]]; then
-		PROMPT_FILE_PATH="${WORKSPACE}/${INPUT_PROMPT_FILE}"
-	fi
-	if [ ! -f "$PROMPT_FILE_PATH" ]; then
-		echo "::error::Prompt file not found: $PROMPT_FILE_PATH"
-		exit 1
-	fi
-	echo "::debug::Reading prompt from file: $PROMPT_FILE_PATH"
-	if [ -n "$INPUT_ENVSUBST_VARS" ]; then
-		PROMPT=$(envsubst "$INPUT_ENVSUBST_VARS" <"$PROMPT_FILE_PATH")
-	else
-		PROMPT=$(cat "$PROMPT_FILE_PATH")
-	fi
-else
-	echo "::error::Either 'prompt' or 'prompt-file' must be provided"
+# Resolve the prompt from file (file-based input only for security)
+if [ -z "$INPUT_PROMPT_FILE" ]; then
+	echo "::error::'prompt-file' input is required"
 	exit 1
+fi
+
+# Resolve prompt file path relative to workspace
+PROMPT_FILE_PATH="$INPUT_PROMPT_FILE"
+if [[ ! "$PROMPT_FILE_PATH" = /* ]]; then
+	PROMPT_FILE_PATH="${WORKSPACE}/${INPUT_PROMPT_FILE}"
+fi
+
+if [ ! -f "$PROMPT_FILE_PATH" ]; then
+	echo "::error::Prompt file not found: $PROMPT_FILE_PATH"
+	exit 1
+fi
+
+echo "::debug::Reading prompt from file: $PROMPT_FILE_PATH"
+if [ -n "$INPUT_ENVSUBST_VARS" ]; then
+	PROMPT=$(envsubst "$INPUT_ENVSUBST_VARS" <"$PROMPT_FILE_PATH")
+else
+	PROMPT=$(cat "$PROMPT_FILE_PATH")
 fi
 
 # Build cursor-agent command arguments

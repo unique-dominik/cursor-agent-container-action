@@ -8,12 +8,9 @@ branding:
   color: purple
 
 inputs:
-  prompt:
-    description: The prompt to send to Cursor Agent (use this OR prompt-file)
-    required: false
   prompt-file:
-    description: Path to a prompt template file with envsubst support
-    required: false
+    description: Path to a prompt template file (supports envsubst)
+    required: true
   envsubst-vars:
     description: Env vars to substitute (e.g., '${VAR1} ${VAR2}')
     required: false
@@ -48,7 +45,6 @@ runs:
   using: docker
   image: Dockerfile
   env:
-    INPUT_PROMPT: ${{ inputs.prompt }}
     INPUT_PROMPT_FILE: ${{ inputs.prompt-file }}
     INPUT_ENVSUBST_VARS: ${{ inputs.envsubst-vars }}
     CURSOR_API_KEY: ${{ inputs.cursor-api-key }}
