@@ -9,6 +9,7 @@
 FROM debian:bookworm-slim
 
 # Install dependencies required for Cursor CLI
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
