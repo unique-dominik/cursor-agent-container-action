@@ -1,10 +1,27 @@
-# Set the base image to use for subsequent instructions
-FROM alpine:3.22
+# Cursor Agent Container Action
+#
+# This is a wrapper that downloads and runs Cursor Agent at runtime.
+# Cursor Agent is proprietary software by Anysphere Inc.
+# License: https://cursor.com/license.txt
+#
+
+# Use Debian slim as base image (glibc required for Cursor CLI binaries)
+FROM debian:bookworm-slim
+
+# Install dependencies required for Cursor CLI
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /usr/src
 
-# Copy any source file(s) required for the action
+# Add Cursor CLI location to PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Copy the entrypoint script
 COPY entrypoint.sh .
 
 # Configure the container to be run as an executable
