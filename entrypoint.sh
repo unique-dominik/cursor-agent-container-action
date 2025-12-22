@@ -3,6 +3,7 @@
 # This script downloads and runs Cursor Agent from Cursor's CDN.
 # Cursor Agent is proprietary software by Anysphere Inc.
 # By using this script, you agree to the Cursor License: https://cursor.com/license.txt
+# This script is basically an modified version of "curl https://cursor.com/install -fsS | bash".
 #
 
 set -e

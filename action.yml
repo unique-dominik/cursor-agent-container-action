@@ -1,22 +1,21 @@
+---
 name: Cursor Agent Container Action
-description: Run Cursor Agent in a container to execute AI-powered coding tasks
+description: Run Cursor Agent in a container to execute AI-powered tasks
 author: unique-dominik
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: terminal
   color: purple
 
-# Define your inputs here.
 inputs:
   prompt:
     description: The prompt to send to Cursor Agent (use this OR prompt-file)
     required: false
   prompt-file:
-    description: Path to a prompt template file. Supports envsubst variable substitution.
+    description: Path to a prompt template file with envsubst support
     required: false
   envsubst-vars:
-    description: Space-separated list of env vars to substitute (e.g., '${VAR1} ${VAR2}')
+    description: Env vars to substitute (e.g., '${VAR1} ${VAR2}')
     required: false
   cursor-api-key:
     description: Cursor API key for authentication (recommended to use secrets)
