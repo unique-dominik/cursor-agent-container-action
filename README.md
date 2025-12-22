@@ -6,6 +6,8 @@ A GitHub Action wrapper to run Cursor Agent in a container for AI-powered coding
 
 ## Usage
 
+### Basic usage with inline prompt
+
 ```yaml
 steps:
   - name: Checkout
@@ -16,16 +18,49 @@ steps:
     with:
       prompt: "Fix the linting errors in src/"
       cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
-      # cursor-agent-version: "2025.12.17-996666f"  # optional
+```
+
+### Advanced usage with template file
+
+Use a prompt template file with environment variable substitution:
+
+```yaml
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Perform code review
+    uses: unique-dominik/cursor-agent-container-action@v1
+    env:
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    with:
+      cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
+      prompt-file: .cursor/workflow.rate-pr.md
+      envsubst-vars: "${GITHUB_REPOSITORY} ${PR_NUMBER} ${PR_HEAD_SHA} ${PR_BASE_SHA}"
+      model: sonnet-4.5
+      output-format: text
+      force: "true"
+      print: "true"
 ```
 
 ## Inputs
 
-| Input                  | Description                                          | Required | Default                 |
-| ---------------------- | ---------------------------------------------------- | -------- | ----------------------- |
-| `prompt`               | The prompt to send to Cursor Agent                   | Yes      | -                       |
-| `cursor-api-key`       | Cursor API key for authentication (use secrets!)    | Yes      | -                       |
-| `cursor-agent-version` | Cursor Agent version to use                          | No       | `2025.12.17-996666f`    |
+| Input                  | Description                                                      | Required | Default                 |
+| ---------------------- | ---------------------------------------------------------------- | -------- | ----------------------- |
+| `prompt`               | The prompt to send to Cursor Agent (use this OR `prompt-file`)  | No*      | -                       |
+| `prompt-file`          | Path to a prompt template file (supports envsubst)              | No*      | -                       |
+| `envsubst-vars`        | Space-separated env vars to substitute (e.g., `${VAR1} ${VAR2}`) | No       | -                       |
+| `cursor-api-key`       | Cursor API key for authentication (use secrets!)                | Yes      | -                       |
+| `cursor-agent-version` | Cursor Agent version to use                                      | No       | `2025.12.17-996666f`    |
+| `model`                | Model to use (e.g., `sonnet-4.5`, `claude-3-opus`)              | No       | -                       |
+| `force`                | Run with `--force` flag                                          | No       | `false`                 |
+| `output-format`        | Output format (`text`, `json`)                                   | No       | -                       |
+| `print`                | Print output to stdout (`--print` flag)                          | No       | `false`                 |
+
+\* Either `prompt` or `prompt-file` must be provided.
 
 ## Setup
 

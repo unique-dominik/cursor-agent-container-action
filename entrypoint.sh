@@ -63,9 +63,52 @@ echo "::group::Cursor Agent Version"
 cursor-agent --version
 echo "::endgroup::"
 
-# Run cursor-agent with the provided prompt
+# Resolve the prompt (either direct or from file with envsubst)
+PROMPT=""
+if [ -n "$INPUT_PROMPT" ]; then
+    PROMPT="$INPUT_PROMPT"
+elif [ -n "$INPUT_PROMPT_FILE" ]; then
+    if [ ! -f "$INPUT_PROMPT_FILE" ]; then
+        echo "::error::Prompt file not found: $INPUT_PROMPT_FILE"
+        exit 1
+    fi
+    echo "::debug::Reading prompt from file: $INPUT_PROMPT_FILE"
+    if [ -n "$INPUT_ENVSUBST_VARS" ]; then
+        PROMPT=$(envsubst "$INPUT_ENVSUBST_VARS" < "$INPUT_PROMPT_FILE")
+    else
+        PROMPT=$(cat "$INPUT_PROMPT_FILE")
+    fi
+else
+    echo "::error::Either 'prompt' or 'prompt-file' must be provided"
+    exit 1
+fi
+
+# Build cursor-agent command arguments
+CURSOR_ARGS=()
+
+if [ "$INPUT_FORCE" = "true" ]; then
+    CURSOR_ARGS+=("--force")
+fi
+
+if [ -n "$INPUT_MODEL" ]; then
+    CURSOR_ARGS+=("--model" "$INPUT_MODEL")
+fi
+
+if [ -n "$INPUT_OUTPUT_FORMAT" ]; then
+    CURSOR_ARGS+=("--output-format=$INPUT_OUTPUT_FORMAT")
+fi
+
+if [ "$INPUT_PRINT" = "true" ]; then
+    CURSOR_ARGS+=("--print")
+fi
+
+# Add the prompt as the last argument
+CURSOR_ARGS+=("$PROMPT")
+
+# Run cursor-agent with all arguments
 echo "::group::Running Cursor Agent"
-cursor-agent "$INPUT_PROMPT"
+echo "::debug::Command: cursor-agent ${CURSOR_ARGS[*]}"
+cursor-agent "${CURSOR_ARGS[@]}"
 echo "::endgroup::"
 
 exit 0
