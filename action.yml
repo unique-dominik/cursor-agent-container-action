@@ -23,21 +23,21 @@ inputs:
   cursor-agent-version:
     description: Cursor Agent version to use (e.g., 2025.12.17-996666f)
     required: false
-    default: "2025.12.17-996666f"
+    default: '2025.12.17-996666f'
   model:
     description: Model to use (e.g., sonnet-4.5, claude-3-opus)
     required: false
   force:
     description: Run with --force flag
     required: false
-    default: "false"
+    default: 'false'
   output-format:
     description: Output format (text, json)
     required: false
   print:
     description: Print output to stdout (--print flag)
     required: false
-    default: "false"
+    default: 'false'
 
 # Define your outputs here.
 outputs:

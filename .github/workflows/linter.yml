@@ -3,7 +3,7 @@
 # https://github.com/super-linter/super-linter
 name: Lint Codebase
 
-"on":
+'on':
   pull_request:
     branches:
       - main
