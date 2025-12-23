@@ -2,7 +2,8 @@
 name: Self Test
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 on:
@@ -31,8 +32,8 @@ jobs:
           cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
           github-token: ${{ github.token }}
           prompt-file: .cursor/test-prompt.md
-          envsubst-vars: "${PR_NUMBER}"
+          envsubst-vars: '${PR_NUMBER}'
           model: auto
-          force: "true"
-          print: "true"
+          force: 'true'
+          print: 'true'
           output-format: text

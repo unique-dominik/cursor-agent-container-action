@@ -13,6 +13,7 @@ correctly.
    - Include the summary output from step 3
 
 Use the GitHub CLI to post the comment:
+
 ```bash
 gh pr comment ${PR_NUMBER} --body "## Cursor Agent Self-Test
 
@@ -22,4 +23,5 @@ gh pr comment ${PR_NUMBER} --body "## Cursor Agent Self-Test
 [Your summary here]"
 ```
 
-**Expected result:** A PR comment should be posted with the last run date and the test output summary.
+**Expected result:** A PR comment should be posted with the last run date and
+the test output summary.

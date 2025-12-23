@@ -3,15 +3,15 @@
 A GitHub Action wrapper to run Cursor Agent in a container for AI-powered coding
 tasks.
 
-> [!CAUTION]
-> **⚠️ Disclaimer:** This is an unofficial wrapper action that downloads and
-> runs [Cursor Agent](https://cursor.com). This project is not affiliated with,
-> endorsed by, or sponsored by Anysphere Inc. (Cursor). Cursor Agent and all its
-> components are subject to the
+> [!CAUTION] **⚠️ Disclaimer:** This is an unofficial wrapper action that
+> downloads and runs [Cursor Agent](https://cursor.com). This project is not
+> affiliated with, endorsed by, or sponsored by Anysphere Inc. (Cursor). Cursor
+> Agent and all its components are subject to the
 > [Cursor License](https://cursor.com/license.txt).
 
-> [!WARNING]
-> While a pre-built Docker image would be the preferred approach, this implementation uses a container action to enable faster development iteration cycles during the initial development phase.
+> [!WARNING] While a pre-built Docker image would be the preferred approach,
+> this implementation uses a container action to enable faster development
+> iteration cycles during the initial development phase.
 
 ## Usage
 
