@@ -17,6 +17,11 @@ inputs:
   cursor-api-key:
     description: Cursor API key for authentication (recommended to use secrets)
     required: true
+  github-token:
+    description: >-
+      GitHub token for gh CLI (optional, only needed for GitHub API access).
+      Use ${{ github.token }} for default permissions or a PAT for elevated access.
+    required: false
   cursor-agent-version:
     description: Cursor Agent version to use (e.g., 2025.12.17-996666f)
     required: false
@@ -35,6 +40,11 @@ inputs:
     description: Print output to stdout (--print flag)
     required: false
     default: 'false'
+  cli-config-file:
+    description: >-
+      Path to a custom .cursor/cli.json config file. If not provided, a hardened
+      default config will be created that restricts dangerous operations.
+    required: false
 
 # Define your outputs here.
 outputs:
@@ -48,8 +58,10 @@ runs:
     INPUT_PROMPT_FILE: ${{ inputs.prompt-file }}
     INPUT_ENVSUBST_VARS: ${{ inputs.envsubst-vars }}
     CURSOR_API_KEY: ${{ inputs.cursor-api-key }}
+    GH_TOKEN: ${{ inputs.github-token }}
     INPUT_CURSOR_AGENT_VERSION: ${{ inputs.cursor-agent-version }}
     INPUT_MODEL: ${{ inputs.model }}
     INPUT_FORCE: ${{ inputs.force }}
     INPUT_OUTPUT_FORMAT: ${{ inputs.output-format }}
     INPUT_PRINT: ${{ inputs.print }}
+    INPUT_CLI_CONFIG_FILE: ${{ inputs.cli-config-file }}

@@ -15,6 +15,11 @@ CURSOR_VERSION="${INPUT_CURSOR_AGENT_VERSION:-2025.12.17-996666f}"
 # Ensure PATH includes cursor-agent location
 export PATH="/root/.local/bin:${PATH}"
 
+# Configure GitHub CLI if token is provided (GH_TOKEN is auto-detected by gh)
+if [ -n "$GH_TOKEN" ]; then
+	echo "::debug::GitHub token provided, gh CLI will use it for authentication."
+fi
+
 # Install Cursor Agent
 install_cursor_agent() {
 	echo "::group::Installing Cursor Agent ${CURSOR_VERSION}"
@@ -67,6 +72,71 @@ echo "::endgroup::"
 
 # GitHub Actions workspace (mounted at /github/workspace in containers)
 WORKSPACE="${GITHUB_WORKSPACE:-/github/workspace}"
+
+# Setup .cursor/cli.json for permissions configuration
+setup_cli_config() {
+	local config_dir="${WORKSPACE}/.cursor"
+	local config_file="${config_dir}/cli.json"
+
+	mkdir -p "${config_dir}"
+
+	if [ -n "$INPUT_CLI_CONFIG_FILE" ]; then
+		# User provided a custom config file
+		local custom_config="$INPUT_CLI_CONFIG_FILE"
+		if [[ ! "$custom_config" = /* ]]; then
+			custom_config="${WORKSPACE}/${INPUT_CLI_CONFIG_FILE}"
+		fi
+
+		if [ ! -f "$custom_config" ]; then
+			echo "::error::CLI config file not found: $custom_config"
+			exit 1
+		fi
+
+		echo "Using custom CLI config from: $custom_config"
+		cp "$custom_config" "$config_file"
+	else
+		# Create hardened default config to restrict dangerous operations
+		echo "Using hardened default CLI config (no custom config provided)"
+		cat >"$config_file" <<'EOF'
+{
+  "permissions": {
+    "allow": ["Shell(cursor-agent)", "Shell(gh pr view)", "Shell(gh pr edit)", "Shell(git)"],
+    "deny": [
+      "Shell(git push)",
+      "Shell(git remote)",
+      "Shell(curl)",
+      "Shell(wget)",
+      "Shell(ssh)",
+      "Shell(scp)",
+      "Shell(nc)",
+      "Shell(netcat)",
+      "Shell(gh auth)",
+      "Shell(gh secret)",
+      "Shell(gh workflow)",
+      "Shell(gh api)",
+      "Shell(gh repo delete)",
+      "Shell(gh release)",
+      "Shell(docker)",
+      "Shell(sudo)",
+      "Shell(env)",
+      "Shell(printenv)",
+      "Shell(base64)",
+      "Write(**)"
+    ]
+  }
+}
+EOF
+	fi
+
+	echo "CLI config written to: $config_file"
+	echo "CLI config contents:"
+	cat "$config_file"
+}
+
+# Setup CLI config before running cursor-agent
+echo "::group::Setting up Cursor CLI config"
+setup_cli_config
+echo "::endgroup::"
 
 # Resolve the prompt from file (file-based input only for security)
 if [ -z "$INPUT_PROMPT_FILE" ]; then

@@ -53,18 +53,48 @@ steps:
       print: 'true'
 ```
 
+### With GitHub CLI access
+
+Pass a GitHub token to enable `gh` CLI commands (e.g., for PR comments):
+
+```yaml
+steps:
+  - name: Checkout
+    uses: actions/checkout@v6
+
+  - name: Run Cursor Agent with GitHub access
+    uses: unique-dominik/cursor-agent-container-action@<sha>
+    with:
+      cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
+      github-token: ${{ github.token }}
+      prompt-file: .cursor/review-and-comment.md
+```
+
+The `gh` CLI is pre-installed and will automatically authenticate using the
+provided token. Your prompt can then use commands like:
+
+```bash
+gh pr comment $PR_NUMBER --body "Review complete!"
+gh issue comment $ISSUE_NUMBER --body "Analysis results..."
+```
+
+> **Note:** Use `${{ github.token }}` for default repository permissions. For
+> cross-repo access or elevated permissions, use a Personal Access Token (PAT)
+> stored as a secret.
+
 ## Inputs
 
-| Input                  | Description                     | Required | Default              |
-| ---------------------- | ------------------------------- | -------- | -------------------- |
-| `prompt-file`          | Path to prompt template file    | Yes      | -                    |
-| `envsubst-vars`        | Env vars to substitute          | No       | -                    |
-| `cursor-api-key`       | API key for auth (use secrets!) | Yes      | -                    |
-| `cursor-agent-version` | Cursor Agent version            | No       | `2025.12.17-996666f` |
-| `model`                | Model (e.g., `sonnet-4.5`)      | No       | -                    |
-| `force`                | Run with `--force` flag         | No       | `false`              |
-| `output-format`        | Output format (`text`, `json`)  | No       | -                    |
-| `print`                | Print output (`--print` flag)   | No       | `false`              |
+| Input                  | Description                      | Required | Default              |
+| ---------------------- | -------------------------------- | -------- | -------------------- |
+| `cursor-agent-version` | Cursor Agent version             | No       | `2025.12.17-996666f` |
+| `cursor-api-key`       | API key for auth (use secrets!)  | Yes      | -                    |
+| `envsubst-vars`        | Env vars to substitute           | No       | -                    |
+| `force`                | Run with `--force` flag          | No       | `false`              |
+| `github-token`         | GitHub token for `gh` CLI access | No       | -                    |
+| `model`                | Model (e.g., `sonnet-4.5`)       | No       | -                    |
+| `output-format`        | Output format (`text`, `json`)   | No       | -                    |
+| `print`                | Print output (`--print` flag)    | No       | `false`              |
+| `prompt-file`          | Path to prompt template file     | Yes      | -                    |
 
 ## Setup
 
