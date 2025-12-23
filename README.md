@@ -17,10 +17,10 @@ reference it in your workflow:
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v4
+    uses: actions/checkout@v6
 
   - name: Run Cursor Agent
-    uses: unique-dominik/cursor-agent-container-action@v1
+    uses: unique-dominik/cursor-agent-container-action@<sha>
     with:
       cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
       prompt-file: .cursor/my-prompt.md
@@ -33,10 +33,10 @@ Use `envsubst` to inject dynamic values into your prompt template:
 ```yaml
 steps:
   - name: Checkout
-    uses: actions/checkout@v4
+    uses: actions/checkout@v6
 
   - name: Perform code review
-    uses: unique-dominik/cursor-agent-container-action@v1
+    uses: unique-dominik/cursor-agent-container-action@<sha>
     env:
       GITHUB_REPOSITORY: ${{ github.repository }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
