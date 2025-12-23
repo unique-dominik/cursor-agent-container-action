@@ -20,7 +20,7 @@ inputs:
   github-token:
     description: >-
       GitHub token for gh CLI (optional, only needed for GitHub API access). Use
-      ${{ github.token }} for default permissions or a PAT for elevated access.
+      github.token for default permissions or a PAT for elevated access.
     required: false
   cursor-agent-version:
     description: Cursor Agent version to use (e.g., 2025.12.17-996666f)
