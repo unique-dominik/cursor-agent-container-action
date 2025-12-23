@@ -8,7 +8,7 @@ tasks.
 > affiliated with, endorsed by, or sponsored by Anysphere Inc. (Cursor). Cursor
 > Agent and all its components are subject to the
 > [Cursor License](https://cursor.com/license.txt).
-
+>
 > [!WARNING] While a pre-built Docker image would be the preferred approach,
 > this implementation uses a container action to enable faster development
 > iteration cycles during the initial development phase.
