@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -24,9 +25,13 @@ jobs:
 
       - name: Run Cursor Agent (basic test)
         uses: ./
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
           cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
+          github-token: ${{ github.token }}
           prompt-file: .cursor/test-prompt.md
+          envsubst-vars: "${PR_NUMBER}"
           model: auto
           force: "true"
           print: "true"
