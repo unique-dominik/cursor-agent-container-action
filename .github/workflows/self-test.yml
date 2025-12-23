@@ -1,0 +1,40 @@
+---
+name: Self Test
+
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test-action:
+    name: Test Cursor Agent Action
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Run Cursor Agent (basic test)
+        uses: ./
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
+          github-token: ${{ github.token }}
+          prompt-file: .cursor/test-prompt.md
+          envsubst-vars: '${PR_NUMBER}'
+          model: auto
+          force: 'true'
+          print: 'true'
+          output-format: text
