@@ -2,8 +2,7 @@
 name: Self Test
 
 concurrency:
-  group:
-    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 on:
@@ -28,7 +27,7 @@ jobs:
         with:
           cursor-api-key: ${{ secrets.CURSOR_API_KEY }}
           prompt-file: .cursor/test-prompt.md
-          model: gpt-4o-mini
-          force: 'true'
-          print: 'true'
+          model: auto
+          force: "true"
+          print: "true"
           output-format: text
