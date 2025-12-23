@@ -53,9 +53,12 @@ jobs:
 
       - name: Test Container Build
         id: run
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
         run: |
           docker run --rm \
             -v /tmp/workspace:/github/workspace \
             --env INPUT_PROMPT_FILE="test-prompt.md" \
             --env INPUT_CURSOR_AGENT_VERSION="2025.12.17-996666f" \
-            ${{ env.TEST_TAG }} || echo "Expected to fail without API key"
+            --env CURSOR_API_KEY="${CURSOR_API_KEY}" \
+            ${{ env.TEST_TAG }}
